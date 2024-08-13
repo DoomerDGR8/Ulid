@@ -20,6 +20,12 @@ Install-Package Ulid
 - [Performance](#performance)
 - [Cli](#cli)
 - [Integrate](#integrate)
+    - [System.Text.Json](#system-jext-json)
+    - [MessagePack-CSharp](#messagepack-csharp)
+    - [Dapper](#dapper)
+    - [Entity Framework Core](#entity-framework-core)
+        - [OnModelCreating](#to-use-those-converters)
+        - [ConfigureConventions](#or-use-model-bulk-configuration)
 - [License](#license)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
@@ -154,11 +160,11 @@ This CLI tool is powered by [ConsoleAppFramework](https://github.com/Cysharp/Con
 
 Integrate
 ---
-**System.Text.Json**
+### System.Text.Json
 
 NuGet: [Ulid.SystemTextJson](https://www.nuget.org/packages/Ulid.SystemTextJson)
 
-You can use custom Ulid converter - `Cysharp.Serialization.Json.UlidJsonConverter`.
+You can use a custom Ulid converter - `Cysharp.Serialization.Json.UlidJsonConverter`.
 
 ```csharp
 var options = new JsonSerializerOptions()
@@ -172,13 +178,13 @@ var options = new JsonSerializerOptions()
 JsonSerializer.Serialize(Ulid.NewUlid(), options);
 ```
 
-If application targetframework is `netcoreapp3.0`, converter is builtin, does not require to add `Ulid.SystemTextJson` package, and does not require use custom options.
+If the application targetframework is `netcoreapp3.0`, the converter is builtin, does not require adding `Ulid.SystemTextJson` package, and does not require using custom options.
 
-**MessagePack-CSharp**
+### MessagePack-CSharp
 
 NuGet: [Ulid.MessagePack](https://www.nuget.org/packages/Ulid.MessagePack)
 
-You can use custom Ulid formatter - `Cysharp.Serialization.MessagePack.UlidMessagePackFormatter` and resolver - `Cysharp.Serialization.MessagePack.UlidMessagePackResolver`.
+You can use a custom Ulid formatter - `Cysharp.Serialization.MessagePack.UlidMessagePackFormatter` and resolver - `Cysharp.Serialization.MessagePack.UlidMessagePackResolver`.
 
 ```csharp
 var resolver = MessagePack.Resolvers.CompositeResolver.Create(
@@ -191,9 +197,9 @@ MessagePackSerializer.Serialize(Ulid.NewUlid(), options);
 
 If you want to use this custom formatter on Unity, download [UlidMessagePackFormatter.cs](https://github.com/Cysharp/Ulid/blob/master/src/Ulid.MessagePack/UlidMessagePackFormatter.cs).
 
-**Dapper**
+### Dapper
 
-For [Dapper](https://github.com/StackExchange/Dapper) or other ADO.NET database mapper, register custom converter from Ulid to binary or Ulid to string.
+For [Dapper](https://github.com/StackExchange/Dapper) or other ADO.NET database mapper, register a custom converter from Ulid to binary or Ulid to string.
 
 ```csharp
 public class BinaryUlidHandler : TypeHandler<Ulid>
@@ -230,9 +236,9 @@ public class StringUlidHandler : TypeHandler<Ulid>
 Dapper.SqlMapper.AddTypeHandler(new BinaryUlidHandler());
 ```
 
-**Entity Framework Core**
+### Entity Framework Core
 
-to use in EF, create ValueConverter and bind it.
+to use in EF, create ValueConverter, and bind it.
 
 ```csharp
 public class UlidToBytesConverter : ValueConverter<Ulid, byte[]>
@@ -270,7 +276,7 @@ public class UlidToStringConverter : ValueConverter<Ulid, string>
 }
 ```
 
-To use those converters, you can either specify individual properties of entities in `OnModelCreating` method of your context:
+To use those converters, you can specify individual properties of entities in `OnModelCreating` method of your context:
 ```csharp
 protected override void OnModelCreating(ModelBuilder modelBuilder)
 {
